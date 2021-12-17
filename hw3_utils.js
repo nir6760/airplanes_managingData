@@ -39,6 +39,7 @@ export function initAll() {
 
     //table fot tabulator
     let tbl = new Tabulator(tbl_view, {
+
         index: "id",
         selectable: 1,
         height: 350,
@@ -46,6 +47,7 @@ export function initAll() {
         pagination: "local",
         placeholder: "No Data Available",
         paginationSize: 10,
+
         columns: [
             {title: "Name", field: "name", headerFilter: "input"},
             {title: "Host ID", field: "host_id", width: 140},
@@ -168,7 +170,10 @@ export function initAll() {
             complete: function (results, csv_file) {
                 tbl.setData(results.data)
                 //table functions
+                var last_row_select=null;
                 function _onSelect(row) {
+                    last_row_select=row;
+                    last_row_select.getElement().style.backgroundColor = "#A6A6DF";
                     card_div.style.visibility = "visible";
                     tbl.selectRow(parseInt(row.getData()['id']))
                     tbl.scrollToRow(row.getIndex(), "center", true);
@@ -181,7 +186,7 @@ export function initAll() {
                     _checkValidationlatlng(row);
 
 
-                    info_el.innerHTML = JSON.stringify(row.getData(), undefined, '\t')//.substring(1,strung.length-1);
+                    info_el.innerHTML = JSON.stringify(row.getData(), undefined, '\t');
 
 
                 }
@@ -202,6 +207,9 @@ export function initAll() {
 
 
                 function _onDeselect(row) {
+                    if(last_row_select!==null){
+                        last_row_select.getElement().style.backgroundColor = "#FFFFFF";
+                    }
 
                     _checkValidationlatlng(row);
 
