@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Airbnb Locations</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+
+    <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator_simple.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables@5.0.7/dist/js/tabulator.min.js"></script>
+
+
+    <script type="text/javascript" src="https://unpkg.com/papaparse@5.3.1/papaparse.min.js"></script>
+
+    <link rel="stylesheet" href="hw3.css">
+</head>
+<body>
+
+<div id="clear_download" style="visibility: visible;">
+    <button id="clear_file" style="visibility: hidden;">Clear</button>
+
+    <button id="download_file" style="visibility: hidden;">Download File</button>
+
+</div>
+
+
+<div id="ïnput_sec" style="visibility: visible;">
+    <input type="file" id="uploaded_csv" accept=".csv"/>
+    <p id="demo">Drag your files here or click in this area.</p>
+    <button id="submit_file" style="visibility: hidden;">Upload File</button>
+</div>
+
+
+<div id="tableAndMap" style="width: 60%; height: 400px;float:left">
+
+    <div id="sort_div" style="visibility: hidden;">
+        <select id="sort-field">
+            <option value="name" selected>Name</option>
+            <option value="host_id">Host ID</option>
+            <option value="id">ID</option>
+            <option value="neighborhood">Neighborhood</option>
+            <option value="room_type">Room Type</option>
+            <option value="price">Price</option>
+        </select>
+
+        <label for="sort-direction"></label>
+        <select id="sort-direction">
+            <option value="asc" selected>asc</option>
+            <option value="desc">desc</option>
+        </select>
+
+        <button id="sort-trigger">Trigger Sort</button>
+    </div>
+
+    <div id="tbl_view" style="width: 100%; height: 400px;visibility: hidden;"></div>
+    <div id="mapid" style="width: 100%; height: 400px;visibility: hidden;" ></div>
+</div>
+
+<div id="card_div" class="card_class" style="width: 40%; height: 400px;visibility: hidden;float:right">
+    <pre><code id="info_code"></code></pre>
+</div>
+
+
+<script type="module">
+    import {initAll} from "./hw3_utils.js";
+
+    initAll();
+</script>
+
+
+
+
+
+
+</body>
+
+</html>
+
+
+
+
