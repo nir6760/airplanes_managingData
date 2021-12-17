@@ -7,10 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
-	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
+    <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico"/>
 
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
 
 
     <link href="https://unpkg.com/tabulator-tables@5.0.7/dist/css/tabulator_simple.min.css" rel="stylesheet">
@@ -38,7 +42,7 @@
 </div>
 
 
-<div id="tableAndMap" style="width: 60%; height: 400px;float:left">
+<div id="tableAndMap" style="width: 60%; height:100%;float:left">
 
     <div id="sort_div" style="visibility: hidden;">
         <select id="sort-field">
@@ -58,12 +62,11 @@
 
         <button id="sort-trigger">Trigger Sort</button>
     </div>
-
-    <div id="tbl_view" style="width: 100%; height: 400px;visibility: hidden;"></div>
-    <div id="mapid" style="width: 100%; height: 400px;visibility: hidden;" ></div>
+    <div id="tbl_view" class="tblmap_class" style="visibility: hidden;"></div>
+    <div id="mapid" style="visibility: hidden;"></div>
 </div>
 
-<div id="card_div" class="card_class" style="width: 40%; height: 400px;visibility: hidden;float:right">
+<div id="card_div" class="card_class" style="visibility: hidden;">
     <pre><code id="info_code"></code></pre>
 </div>
 
@@ -73,10 +76,6 @@
 
     initAll();
 </script>
-
-
-
-
 
 
 </body>

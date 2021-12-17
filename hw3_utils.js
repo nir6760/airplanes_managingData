@@ -8,7 +8,7 @@ export function initAll() {
     const clear_btn = document.getElementById('clear_file');
     const download_btn = document.getElementById('download_file');
     let current_coord = undefined;
-    let selected_row_coord = undefined;
+    let selected_row = undefined;
     let last_red_marker_latlng = "";
 
     //map
@@ -29,7 +29,7 @@ export function initAll() {
     const room_type_info = document.getElementById('room_type_info');
     const price_info = document.getElementById('price_info');
 
-    function insert_into_card(name_str, id_str, neighborhood_str, room_type_str, price_str){
+    function insert_into_card(name_str, id_str, neighborhood_str, room_type_str, price_str) {
         name_info.innerHTML = "Name: " + name_str;
         id_info.innerHTML = "ID: " + id_str;
         neighborhood_info.innerHTML = "Neighborhood: " + neighborhood_str;
@@ -81,7 +81,7 @@ export function initAll() {
     function zoomTo(lat, lng) {
         //mymap.setZoom(20);
         //mymap.panTo(new L.LatLng(lat, lng));
-        mymap.flyTo(new L.LatLng(lat, lng), 16, {noMoveStart:true});
+        mymap.flyTo(new L.LatLng(lat, lng), 16, {noMoveStart: true});
     }
 
 
@@ -119,15 +119,18 @@ export function initAll() {
             input_sec.style.visibility = "hidden";
             submit_btn.style.visibility = "hidden";
 
-            card_div.style.visibility = "visible";
+
             sort_div.style.visibility = "visible";
             clear_btn.style.visibility = "visible";
             download_btn.style.visibility = "visible";
             map_view.style.visibility = "visible";
+            info_el.style.visibility = "visible";
             handle_csv();
         });
 
         clear_btn.addEventListener("click", function (e) {
+
+            info_el.innerHTML = "";
             tbl.clearData();
             input_file.value = "";
             csv_file = null;
@@ -144,7 +147,7 @@ export function initAll() {
             map_view.style.visibility = "hidden";
             input_sec.style.display = "block"
             card_div.style.visibility = "hidden";
-
+            last_red_marker_latlng="";
 
 
         });
@@ -164,63 +167,86 @@ export function initAll() {
             skipEmptyLines: true,
             complete: function (results, csv_file) {
                 tbl.setData(results.data)
-
+                //table functions
                 function _onSelect(row) {
                     card_div.style.visibility = "visible";
                     tbl.selectRow(parseInt(row.getData()['id']))
                     tbl.scrollToRow(row.getIndex(), "center", true);
-                    zoomTo(row.getData().latitude, row.getData().longitude);
-                    let latlng = L.latLng(row.getData().latitude, row.getData().longitude);
-                    if(last_red_marker_latlng !== "" && last_red_marker_latlng !== latlng.toString()){
+                    try {
+                        zoomTo(row.getData().latitude, row.getData().longitude);
+                    } catch (error) {
+                        console.error(error.toString());
+
+                    }
+                    _checkValidationlatlng(row);
+
+
+                    info_el.innerHTML = JSON.stringify(row.getData(), undefined, '\t')//.substring(1,strung.length-1);
+
+
+                }
+
+                function _checkValidationlatlng(row) {
+                    try {
+                        let latlng = L.latLng(row.getData().latitude, row.getData().longitude);
+                        _setMarkerColor(latlng);
+                    } catch (error) {
+                        if (last_red_marker_latlng !== "") {
                             markers[last_red_marker_latlng].marker.setIcon(L.Icon.Default.prototype);
                             last_red_marker_latlng = "";
                         }
-                    markers[latlng.toString()].marker.setIcon(redIcon);
-                    last_red_marker_latlng = latlng.toString();
-
-                    info_el.innerHTML = JSON.stringify(row.getData(), undefined, '\t')//.substring(1,strung.length-1);
+                        console.error(error.toString());
+                    }
 
                 }
 
 
                 function _onDeselect(row) {
-                    let latlng = L.latLng(row.getData().latitude, row.getData().longitude);
-                    if(last_red_marker_latlng !== ""){
-                        markers[last_red_marker_latlng.toString()].marker.setIcon(L.Icon.Default.prototype);
-                        last_red_marker_latlng = "";
-                        }
+
+                    _checkValidationlatlng(row);
 
                     info_el.innerHTML = "";
                 }
 
                 tbl.on("rowSelected", _onSelect)
                 tbl.on("rowDeselected", _onDeselect)
-                // tbl.on("dataFiltered", function (filters, rows) {
-                //setup_markers(rows, map)
-                // });
+                tbl.on("dataFiltered", function(filters, rows){
+                    last_red_marker_latlng = "";
+                    put_markers(rows, mymap);
 
+                });
+
+                // map functions
                 function _moveMapCursor(event) {
-                    if(last_red_marker_latlng !== ""){
-                            markers[last_red_marker_latlng].marker.setIcon(L.Icon.Default.prototype);
-                            last_red_marker_latlng = "";
-                        }
+                    if (last_red_marker_latlng !== "") {
+                        markers[last_red_marker_latlng].marker.setIcon(L.Icon.Default.prototype);
+                        last_red_marker_latlng = "";
+                    }
                     var selectedData = tbl.getSelectedRows();
                     if (selectedData.length > 0) {
                         tbl.deselectRow();
                         _onDeselect(selectedData[0]);
                     }
                 }
-
+                function _setMarkerColor(latlng){
+                    if (last_red_marker_latlng !== "" && last_red_marker_latlng !== latlng.toString()) {
+                        markers[last_red_marker_latlng].marker.setIcon(L.Icon.Default.prototype);
+                        last_red_marker_latlng = "";
+                    }
+                    markers[latlng.toString()].marker.setIcon(redIcon);
+                    last_red_marker_latlng = latlng.toString();
+                }
 
                 function _onMarkerClick(event) {
                     var latlng = event.latlng.toString();
                     _moveMapCursor(event);
-                    if(last_red_marker_latlng !== "" && last_red_marker_latlng !== latlng.toString()){
-                            markers[last_red_marker_latlng].marker.setIcon(L.Icon.Default.prototype);
-                            last_red_marker_latlng = "";
-                        }
-                    markers[latlng.toString()].marker.setIcon(redIcon);
-                    last_red_marker_latlng = latlng.toString();
+                    _setMarkerColor(latlng);
+                    var row_id = markers[event.latlng.toString()].row["id"];
+                    if(selected_row !== tbl.getRow(row_id)){
+                        tbl.setPage(parseInt(tbl.getRow(row_id).getPosition(true)/10+1));
+                        tbl.selectRow(parseInt(row_id));
+                    }
+
 
                 }
 
@@ -231,10 +257,15 @@ export function initAll() {
                         if (typeof row['getData'] === 'function') {
                             row = row.getData()
                         }
-                        let marker = L.marker([row.latitude, row.longitude], {title: row.name, riseOnHover: true});
-                        markers_layer.addLayer(marker)
-                        markers[marker._latlng.toString()] = {marker: marker, row: row}
-                        marker.on('click', _onMarkerClick)
+                        try {
+                            let marker = L.marker([row.latitude, row.longitude], {title: row.name, riseOnHover: true});
+                            markers_layer.addLayer(marker);
+                            markers[marker._latlng.toString()] = {marker: marker, row: row};
+                            marker.on('click', _onMarkerClick);
+                        } catch (error) {
+                            console.error(error.toString());
+
+                        }
                     }
                     map.addLayer(markers_layer);
                 }
@@ -244,16 +275,16 @@ export function initAll() {
                 }
 
                 function _mouseUp(event) {
-                    let selected = tbl.getSelectedRows()
+                    let selected = tbl.getSelectedRows();
                     if (selected.length > 0) {
-                        selected_row_coord = selected[0];
+                        selected_row = selected[0];
                     } else {
-                        if(last_red_marker_latlng !== ""){
+                        if (last_red_marker_latlng !== "") {
                             markers[last_red_marker_latlng].marker.setIcon(L.Icon.Default.prototype);
                             last_red_marker_latlng = "";
                         }
 
-                        selected_row_coord = undefined
+                        selected_row = undefined
                     }
                     if (mymap.getCenter().lat !== current_coord.lat
                         ||
@@ -262,11 +293,20 @@ export function initAll() {
                     }
                 }
 
-                const first_coord = [results.data[0].latitude, results.data[0].longitude];
+                var first_coord = ["40.74561", "-73.91927"];
                 mymap.setView(first_coord, 13);
-                mymap.on('mousedown',_mouseDown)
-                mymap.on('selected_row_coord',_mouseUp)
-                mymap.on('movestart', _moveMapCursor)
+                try {
+                    first_coord = [results.data[0].latitude, results.data[0].longitude];
+                    mymap.setView(first_coord, 13);
+                } catch (error) {
+                    console.error(error.toString());
+
+                }
+
+                mymap.on('mousedown', _mouseDown);
+                mymap.on('mouseup', _mouseUp);
+                mymap.on('movestart', _moveMapCursor);
+
                 put_markers(tbl.getData(), mymap);
             }
         });
