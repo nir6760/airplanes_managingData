@@ -1,4 +1,4 @@
-export function initAll() {
+function initAll() {
     let csv_file;
     const submit_btn = document.getElementById('submit_file');
     const input_file = document.getElementById('uploaded_csv');
@@ -335,6 +335,7 @@ export function initAll() {
 
 
 }
+initAll();
 
 
 
